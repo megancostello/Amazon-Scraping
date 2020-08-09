@@ -1,9 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 
 workbook = load_workbook(filename="Log.xlsx")
 sheet = workbook["Logged"]
+
 
 headers1 = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'}
 urls = ["https://www.amazon.com/dp/B005VS9WO6", "https://www.amazon.com/dp/B0081XINMA", "https://www.amazon.com/dp/B0711Y9Y8W",
@@ -18,13 +20,15 @@ def getData(pageURL):
 for url in urls:
     soup = getData(url)
     title = ''
-    try:
-        title = soup.find(id="productTitle").get_text().rstrip()
-        print('soup is good')
-    except AttributeError:
-        soup = getData(url)
-        print('soup redone')
-        title = soup.find(id="productTitle").get_text().rstrip()
+    hasTitle = False
+    while hasTitle is not True:
+        try:
+            title = soup.find(id="productTitle").get_text().rstrip()
+            hasTitle = True
+            print('soup is good')
+        except AttributeError or TypeError:
+            soup = getData(url)
+            print('soup redone')
     brand = soup.find(id="bylineInfo").get_text().rstrip()
     #mainImg = soup.find(id="landingImage")
     #altImgs = soup.find_all("li", class_="a-spacing-small item imageThumbnail a-declarative")
@@ -64,8 +68,14 @@ for url in urls:
     sheet.cell(row=rowCounter, column=4).value = sizeCount
     sheet.cell(row=rowCounter, column=5).value = colorCount
 
+    for x in range(1,6):
+        if sheet.cell(row=rowCounter, column=x).value != workbook["Actual"].cell(row=rowCounter, column=x).value:
+            sheet.cell(row=rowCounter, column=x).fill = PatternFill(start_color='FFEE1111', end_color='FFEE1111', fill_type='solid')
+        else:
+            sheet.cell(row=rowCounter, column=x).fill = PatternFill(start_color='00FFFFFF', end_color='00FFFFFF', fill_type='solid')
     workbook.save("Log.xlsx")
     rowCounter+=1
+
 #print(response.text)
 #print("product: ",title)
 #print("brand: ",brand)
