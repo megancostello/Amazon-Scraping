@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+import json
 
 workbook = load_workbook(filename="Log.xlsx")
 sheet = workbook["Logged"]
@@ -34,8 +35,10 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
 
     styleCount = 0
     baseStyleName = ''
+    dropdown = False
     if soup.find(id="native_dropdown_selected_style_name") is not None:
         baseStyleName = "native_style_name_"
+        dropdown=True
     else:
         baseStyleName = "style_name_"
     styleName = baseStyleName + str(styleCount)
@@ -43,6 +46,10 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
     while soup.find(id=styleName):
         styleCount+=1
         styleName = baseStyleName + str(styleCount)
+
+    hasStyles = False
+    if styleCount > 0:
+        hasStyles = True
 
     sizeCount = 0
     baseSizeName = "size_name_"
@@ -52,6 +59,10 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
         sizeCount+=1
         sizeName = baseSizeName + str(sizeCount)
 
+    hasSizes = False
+    if sizeCount > 0:
+        hasSizes = True
+
     colorCount = 0
     baseColorName = "color_name_"
     colorName = baseColorName + str(colorCount)
@@ -59,6 +70,37 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
     while soup.find(id=colorName):
         colorCount+=1
         colorName = baseColorName + str(colorCount)
+
+    hasColors = False
+    if colorCount > 0:
+        hasColors = True
+
+    #gotStyle = False
+    #gotSize = False
+    #gotColor = False
+
+    selectedStyle = ''
+    selectedSize = ''
+    selectedColor = ''
+    selections = []
+
+    if dropdown:
+        selectedStyle = soup.find(id="dropdown_selected_style_name").get_text().rstrip()
+        print(selectedStyle)
+    else:
+        #selectedStyle = soup.find(id="variation_style_name")
+        allSelections = soup.findAll("span", attrs={"class" : "selection"})
+        #print(allSelections)
+
+        for selection in allSelections:
+            temp = selection.get_text().rstrip()
+            temp2 = temp.replace("\n","")
+            selections.append(temp2)
+        print(selections)
+        #print("Style: ", selectedStyle)
+        #print("Size: ", selectedSize)
+        #print("Color: ", selectedColor)
+
 
     for char in title:
         if (char == '\n'):
