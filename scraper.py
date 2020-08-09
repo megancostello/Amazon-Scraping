@@ -6,18 +6,18 @@ from openpyxl.styles import PatternFill
 workbook = load_workbook(filename="Log.xlsx")
 sheet = workbook["Logged"]
 
-
 headers1 = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'}
-urls = ["https://www.amazon.com/dp/B005VS9WO6", "https://www.amazon.com/dp/B0081XINMA", "https://www.amazon.com/dp/B0711Y9Y8W",
-        "https://www.amazon.com/dp/B00FPKNRG4", "https://www.amazon.com/dp/B075FY228K"]
 rowCounter = 2
 
+#function for getting Amazon page data via requests.get() and convert into BeautifulSoup obj
 def getData(pageURL):
     response = requests.get(pageURL, headers=headers1)
     soupy = BeautifulSoup(response.content, 'html.parser')
     return soupy
 
-for url in urls:
+#cycles through rows in column 6 which has URLs
+for urlRow in range(2, workbook["Actual"].max_row+1):
+    url = workbook["Actual"].cell(row=urlRow, column=6).value
     soup = getData(url)
     title = ''
     hasTitle = False
@@ -29,13 +29,15 @@ for url in urls:
         except AttributeError or TypeError:
             soup = getData(url)
             print('soup redone')
+
     brand = soup.find(id="bylineInfo").get_text().rstrip()
-    #mainImg = soup.find(id="landingImage")
-    #altImgs = soup.find_all("li", class_="a-spacing-small item imageThumbnail a-declarative")
-    #altImgs = soup.find_all(attrs={"class":"a-spacing-small item imageThumbnail a-declarative"})
-    sample = title
+
     styleCount = 0
-    baseStyleName = "style_name_"
+    baseStyleName = ''
+    if soup.find(id="native_dropdown_selected_style_name") is not None:
+        baseStyleName = "native_style_name_"
+    else:
+        baseStyleName = "style_name_"
     styleName = baseStyleName + str(styleCount)
 
     while soup.find(id=styleName):
@@ -79,8 +81,7 @@ for url in urls:
 #print(response.text)
 #print("product: ",title)
 #print("brand: ",brand)
-#print(mainImg)
 #print('Style count: ', styleCount)
 #print('Size count: ', sizeCount)
 #print('Color count: ', colorCount)
-#print(len(altImgs))
+
