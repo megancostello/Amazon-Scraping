@@ -1,6 +1,8 @@
 # Amazon-Scraping
 Python script that scrapes Amazon PDP info from a given URL, logs product and variation details into a spreadsheet.
 
+Specifically, it gets Product Title, Brand, Style Count of Parent, Size Count of Parent, Color Count of Parent, Selected Style, Selected Size, Selected Color from the product URL. After logging it into the spreadsheet, it highlights cells that don't match the specifications for each product. This was made to make "firewatching" / looking for broken Amazon product variations easier for Amazon Sellers/Vendors and their catalog managers.  
+
 Steps to Use:
   1. Download Log.xlsx and scraper.py to the same folder
   2. Modify 'Actual' sheet to reflect the products, correct variation info, and URLs you want to scrape
