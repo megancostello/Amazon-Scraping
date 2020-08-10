@@ -14,6 +14,7 @@ Specifically, it gets Product Title, Brand, Style Count of Parent, Size Count of
   
 ## **Troubleshooting Tips:**
 - close the Excel file Log.xlsx before running scraper.py!!!
+- put both Log.xlsx and scraper.py in the SAME folder
 - make sure correct libraries are downloaded
 - make sure URLs in Column I/9 are correct
 
