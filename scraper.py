@@ -18,7 +18,7 @@ def getData(pageURL):
 
 #cycles through rows in column 6 which has URLs
 for urlRow in range(2, workbook["Actual"].max_row+1):
-    url = workbook["Actual"].cell(row=urlRow, column=6).value
+    url = workbook["Actual"].cell(row=urlRow, column=9).value
     soup = getData(url)
     title = ''
     hasTitle = False
@@ -35,10 +35,10 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
 
     styleCount = 0
     baseStyleName = ''
-    dropdown = False
+    dropdownStyle = False
     if soup.find(id="native_dropdown_selected_style_name") is not None:
         baseStyleName = "native_style_name_"
-        dropdown=True
+        dropdownStyle=True
     else:
         baseStyleName = "style_name_"
     styleName = baseStyleName + str(styleCount)
@@ -75,32 +75,54 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
     if colorCount > 0:
         hasColors = True
 
-    #gotStyle = False
-    #gotSize = False
-    #gotColor = False
-
     selectedStyle = ''
-    selectedSize = ''
-    selectedColor = ''
     selections = []
 
-    if dropdown:
+    if dropdownStyle:
         selectedStyle = soup.find(id="dropdown_selected_style_name").get_text().rstrip()
         print(selectedStyle)
-    else:
-        #selectedStyle = soup.find(id="variation_style_name")
-        allSelections = soup.findAll("span", attrs={"class" : "selection"})
-        #print(allSelections)
+        sheet.cell(row=rowCounter, column=6).value = selectedStyle
+        hasStyles = False
 
-        for selection in allSelections:
-            temp = selection.get_text().rstrip()
-            temp2 = temp.replace("\n","")
-            selections.append(temp2)
-        print(selections)
-        #print("Style: ", selectedStyle)
-        #print("Size: ", selectedSize)
-        #print("Color: ", selectedColor)
+    allSelections = soup.findAll("span", attrs={"class": "selection"})
 
+    for selection in allSelections:
+        temp = selection.get_text().rstrip()
+        temp2 = temp.replace("\n","")
+        selections.append(temp2)
+
+    if hasStyles and hasSizes and hasColors:
+        sheet.cell(row=rowCounter, column=6).value = selections[0]
+        sheet.cell(row=rowCounter, column=7).value = selections[1]
+        sheet.cell(row=rowCounter, column=8).value = selections[2]
+    elif hasStyles and hasSizes and not hasColors:
+        sheet.cell(row=rowCounter, column=7).value = selections[0]
+        sheet.cell(row=rowCounter, column=6).value = selections[1]
+        sheet.cell(row=rowCounter, column=8).value = None
+    elif not hasStyles and hasSizes and hasColors:
+        sheet.cell(row=rowCounter, column=7).value = selections[0]
+        sheet.cell(row=rowCounter, column=8).value = selections[1]
+        if not dropdownStyle:
+            sheet.cell(row=rowCounter, column=6).value = None
+    elif hasStyles and not hasSizes and hasColors:
+        sheet.cell(row=rowCounter, column=6).value = selections[0]
+        sheet.cell(row=rowCounter, column=8).value = selections[1]
+        sheet.cell(row=rowCounter, column=7).value = None
+    elif hasStyles and not hasSizes and not hasColors:
+        sheet.cell(row=rowCounter, column=6).value = selections[0]
+        sheet.cell(row=rowCounter, column=7).value = None
+        sheet.cell(row=rowCounter, column=8).value = None
+    elif not hasStyles and hasSizes and not hasColors:
+        sheet.cell(row=rowCounter, column=7).value = selections[0]
+        sheet.cell(row=rowCounter, column=8).value = None
+        if not dropdownStyle:
+            sheet.cell(row=rowCounter, column=6).value = None
+    elif not hasStyles and not hasSizes and hasColors:
+        sheet.cell(row=rowCounter, column=8).value = selections[0]
+        sheet.cell(row=rowCounter, column=7).value = None
+        if not dropdownStyle:
+            sheet.cell(row=rowCounter, column=6).value = None
+    print(selections)
 
     for char in title:
         if (char == '\n'):
@@ -112,7 +134,7 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
     sheet.cell(row=rowCounter, column=4).value = sizeCount
     sheet.cell(row=rowCounter, column=5).value = colorCount
 
-    for x in range(1,6):
+    for x in range(1,9):
         if sheet.cell(row=rowCounter, column=x).value != workbook["Actual"].cell(row=rowCounter, column=x).value:
             sheet.cell(row=rowCounter, column=x).fill = PatternFill(start_color='FFEE1111', end_color='FFEE1111', fill_type='solid')
         else:
@@ -120,10 +142,4 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
     workbook.save("Log.xlsx")
     rowCounter+=1
 
-#print(response.text)
-#print("product: ",title)
-#print("brand: ",brand)
-#print('Style count: ', styleCount)
-#print('Size count: ', sizeCount)
-#print('Color count: ', colorCount)
 
