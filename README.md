@@ -21,3 +21,4 @@ Specifically, it gets Product Title, Brand, Style Count of Parent, Size Count of
 ## **Potential Improvement Ideas:**
 - add a timestamp for each row
 - add email alerts when a variation is incorrect (red highlighted cell)
+- periodically run scraper.py to check for broken variations
