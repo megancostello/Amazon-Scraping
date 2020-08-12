@@ -22,5 +22,5 @@ Specifically, it gets Product Title, Brand, Style Count of Parent, Size Count of
 - [x] add a timestamp for each row
 - [ ] add email alerts when a variation is incorrect (red highlighted cell)
 - [ ] periodically run scraper.py to check for broken variations
-- [ ] add input boxes, to customize which rows the user is checking and the spreadsheet being used
+- [x] add input boxes, to customize which rows the user is checking and the spreadsheet being used
 - [ ] make it user friendly to run, with a batch file
