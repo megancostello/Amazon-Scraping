@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+import datetime
 
 workbook = load_workbook(filename="Log.xlsx")
 sheet = workbook["Logged"]
@@ -131,15 +132,16 @@ for urlRow in range(2, workbook["Actual"].max_row+1):
                 sheet.cell(row=rowCounter, column=6).value = None
         print(selections)
 
-        for char in title:
-            if (char == '\n'):
-               title = title.replace(char, '')
+        title = title.replace('\n', '')
 
         sheet.cell(row=rowCounter, column=1).value = title
         sheet.cell(row=rowCounter, column=2).value = brand
         sheet.cell(row=rowCounter, column=3).value = styleCount
         sheet.cell(row=rowCounter, column=4).value = sizeCount
         sheet.cell(row=rowCounter, column=5).value = colorCount
+
+    timestamp = ('{:%m-%d-%Y %H:%M:%S}'.format(datetime.datetime.now()))
+    sheet.cell(row=rowCounter, column=9).value = timestamp
 
     for x in range(1,9):
         if sheet.cell(row=rowCounter, column=x).value != workbook["Actual"].cell(row=rowCounter, column=x).value:
