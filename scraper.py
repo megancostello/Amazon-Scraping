@@ -5,8 +5,7 @@ from openpyxl.styles import PatternFill
 import datetime
 import tkinter as tk
 
-HEIGHT = 500
-WIDTH = 300
+incorrectVariations =[]
 
 def scrapeAmazon(startRow, endRow):
     workbook = load_workbook(filename="Log.xlsx")
@@ -147,15 +146,20 @@ def scrapeAmazon(startRow, endRow):
 
         timestamp = ('{:%m-%d-%Y %H:%M:%S}'.format(datetime.datetime.now()))
         sheet.cell(row=rowCounter, column=9).value = timestamp
-
+        somethingsWrong = False
         for x in range(1,9):
             if sheet.cell(row=rowCounter, column=x).value != workbook["Actual"].cell(row=rowCounter, column=x).value:
                 sheet.cell(row=rowCounter, column=x).fill = PatternFill(start_color='FFEE1111', end_color='FFEE1111', fill_type='solid')
+                somethingsWrong = True
             else:
                 sheet.cell(row=rowCounter, column=x).fill = PatternFill(start_color='00FFFFFF', end_color='00FFFFFF', fill_type='solid')
+        if somethingsWrong:
+            asin = url.replace("https://amazon.com/dp/", "")
+            tempArray = [asin, selections]
+            incorrectVariations.append(tempArray)
         workbook.save("Log.xlsx")
         rowCounter+=1
-
+    print(incorrectVariations)
 root = tk.Tk()
 
 l1 = tk.Label(root, text="Start Row:", font=40)
