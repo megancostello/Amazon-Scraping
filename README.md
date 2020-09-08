@@ -5,6 +5,11 @@ Specifically, it gets Product Title, Brand, Style Count of Parent, Size Count of
 
 'Actual' sheet in Log.xlsx is for given and correct product specifications. 'Logged' sheet in Log.xlsx is where the current Amazon page data is stored after scraping. 
 
+## **Packages Needed:**
+- bs4
+- requests
+- openpyxl
+
 ## **Steps to Use:**
   1. Download Log.xlsx and scraper.py to the same folder
   2. Modify 'Actual' sheet to reflect the products, correct variation info, and URLs you want to scrape
